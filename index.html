@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="学生向けコミュニティ SchoolHub">
+  <title>SchoolHub</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="toast" class="toast"></div>
+
+<div id="authView" class="auth-view hidden">
+  <div class="auth-card">
+    <div class="brand big">🏫 <span>SchoolHub</span></div>
+    <p class="muted">学生生活を、もっと便利に。</p>
+    <div class="tabs">
+      <button class="tab active" data-auth="login">ログイン</button>
+      <button class="tab" data-auth="signup">新規登録</button>
+    </div>
+    <form id="authForm">
+      <label>メールアドレス<input id="authEmail" type="email" required placeholder="example@mail.com"></label>
+      <label>パスワード<input id="authPassword" type="password" minlength="6" required placeholder="6文字以上"></label>
+      <div id="nameField"><label>表示名<input id="authName" type="text" maxlength="20" placeholder="表示名"></label></div>
+      <button class="primary full" type="submit" id="authSubmit">ログイン</button>
+    </form>
+    <p class="small muted">※本番公開時は学校ルール・利用規約・通報機能なども設定してね。</p>
+  </div>
+</div>
+
+<div id="appView" class="app hidden">
+  <aside class="sidebar">
+    <div class="brand">🏫 <span>SchoolHub</span></div>
+    <nav>
+      <button class="nav active" data-page="home">🏠 <span>ホーム</span></button>
+      <button class="nav" data-page="board">💬 <span>掲示板</span></button>
+      <button class="nav" data-page="questions">❓ <span>質問箱</span></button>
+      <button class="nav" data-page="events">📅 <span>イベント</span></button>
+      <button class="nav" data-page="study">📚 <span>勉強</span></button>
+      <button class="nav" data-page="timer">⏱️ <span>タイマー</span></button>
+      <button class="nav" data-page="ranking">🏆 <span>ランキング</span></button>
+      <button class="nav" data-page="profile">👤 <span>マイページ</span></button>
+    </nav>
+    <div class="side-bottom">
+      <button id="themeBtn" class="ghost">🌙 テーマ</button>
+      <button id="logoutBtn" class="ghost danger">↪ ログアウト</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header>
+      <button id="mobileMenu" class="icon-btn">☰</button>
+      <div class="search-wrap">🔎 <input id="globalSearch" placeholder="SchoolHubを検索"></div>
+      <div class="user-chip">
+        <div class="avatar" id="headerAvatar">学</div>
+        <span id="headerName">学生</span>
+      </div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-home">
+        <div class="hero">
+          <div><span class="eyebrow">STUDENT COMMUNITY</span><h1>学校生活を、もっと楽しく。</h1><p>掲示板、質問、予定、勉強記録をひとつに。</p></div>
+          <div class="hero-icon">🏫</div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span>💬</span><small>投稿</small><b id="statPosts">0</b></div>
+          <div class="stat"><span>❓</span><small>質問</small><b id="statQuestions">0</b></div>
+          <div class="stat"><span>📅</span><small>予定</small><b id="statEvents">0</b></div>
+          <div class="stat"><span>📚</span><small>勉強時間</small><b id="statStudy">0分</b></div>
+        </div>
+        <div class="two-col">
+          <div class="panel"><div class="panel-title"><h2>🔥 人気の投稿</h2><button class="text-btn" data-go="board">すべて見る →</button></div><div id="homePosts"></div></div>
+          <div class="panel"><div class="panel-title"><h2>📅 近い予定</h2><button class="text-btn" data-go="events">予定一覧 →</button></div><div id="homeEvents"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-board">
+        <div class="page-title"><h1>💬 掲示板</h1><p>みんなで話そう。困ったことや学校の話題を共有しよう。</p></div>
+        <div class="panel composer">
+          <textarea id="postText" maxlength="500" placeholder="今なにしてる？学校について話そう！"></textarea>
+          <div class="composer-bottom"><span id="postChars">0 / 500</span><button id="postBtn" class="primary">投稿する</button></div>
+        </div>
+        <div class="filters"><button class="filter active" data-filter="new">新着</button><button class="filter" data-filter="popular">人気</button></div>
+        <div id="postList"></div>
+      </section>
+
+      <section class="page" id="page-questions">
+        <div class="page-title"><h1>❓ 質問箱</h1><p>分からないことを質問して、みんなで解決しよう。</p></div>
+        <div class="panel composer">
+          <input id="questionTitle" maxlength="80" placeholder="質問タイトル">
+          <textarea id="questionBody" maxlength="600" placeholder="質問内容を書いてみよう"></textarea>
+          <button id="questionBtn" class="primary">質問する</button>
+        </div>
+        <div id="questionList"></div>
+      </section>
+
+      <section class="page" id="page-events">
+        <div class="page-title"><h1>📅 イベント</h1><p>テスト、文化祭、提出物などをまとめて管理。</p></div>
+        <div class="panel composer">
+          <div class="form-grid"><input id="eventTitle" maxlength="80" placeholder="イベント名"><input id="eventDate" type="datetime-local"><input id="eventPlace" maxlength="80" placeholder="場所（任意）"></div>
+          <button id="eventBtn" class="primary">イベントを追加</button>
+        </div>
+        <div id="eventList" class="event-grid"></div>
+      </section>
+
+      <section class="page" id="page-study">
+        <div class="page-title"><h1>📚 勉強</h1><p>勉強時間を記録して、習慣を見える化。</p></div>
+        <div class="study-dashboard">
+          <div class="panel study-main"><span class="eyebrow">MY STUDY TIME</span><div class="study-number" id="studyBig">0</div><span>分</span><div class="progress"><i id="studyProgress"></i></div><p class="muted">今週の目標：<b>600分</b></p></div>
+          <div class="panel"><h2>⏱ 記録する</h2><input id="studyMinutes" type="number" min="1" max="1440" placeholder="勉強時間（分）"><select id="studySubject"><option>数学</option><option>英語</option><option>国語</option><option>理科</option><option>社会</option><option>その他</option></select><button id="studyBtn" class="primary full">記録する</button></div>
+        </div>
+        <div class="panel"><div class="panel-title"><h2>最近の勉強記録</h2></div><div id="studyHistory"></div></div>
+      </section>
+
+
+      <section class="page" id="page-timer">
+        <div class="page-title"><h1>⏱️ 勉強タイマー</h1><p>集中した時間を測って、そのまま勉強記録にも追加できるよ。</p></div>
+        <div class="timer-layout">
+          <div class="panel timer-card">
+            <span class="eyebrow">FOCUS TIMER</span>
+            <div id="timerDisplay" class="timer-display">00:00:00</div>
+            <div class="timer-status" id="timerStatus">停止中</div>
+            <div class="timer-actions">
+              <button id="timerStart" class="primary">▶ スタート</button>
+              <button id="timerPause" class="action">⏸ 一時停止</button>
+              <button id="timerReset" class="action">↺ リセット</button>
+            </div>
+            <div class="timer-record">
+              <select id="timerSubject"><option>数学</option><option>英語</option><option>国語</option><option>理科</option><option>社会</option><option>その他</option></select>
+              <button id="timerRecord" class="primary full">経過時間を勉強記録に追加</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-ranking">
+        <div class="page-title"><h1>🏆 ランキング</h1><p>今週の勉強時間ランキング。</p></div>
+        <div class="panel"><div id="rankingList"></div></div>
+      </section>
+
+      <section class="page" id="page-profile">
+        <div class="page-title"><h1>👤 マイページ</h1><p>プロフィールと自分の活動を管理。</p></div>
+        <div class="profile-layout">
+          <div class="panel profile-card">
+            <div class="big-avatar" id="profileAvatar">学</div>
+            <label>表示名<input id="profileName" maxlength="20"></label>
+            <label>ひとこと<textarea id="profileBio" maxlength="160"></textarea></label>
+            <button id="profileSave" class="primary">保存する</button>
+          </div>
+          <div class="panel"><h2>📊 マイデータ</h2><div class="profile-stats"><div><b id="myPostCount">0</b><span>投稿</span></div><div><b id="myLikes">0</b><span>もらったいいね</span></div><div><b id="myStudy">0</b><span>勉強時間(分)</span></div></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div id="modal" class="modal hidden"><div class="modal-card"><button id="modalClose" class="modal-close">×</button><div id="modalBody"></div></div></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
